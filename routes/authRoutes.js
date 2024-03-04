@@ -10,12 +10,18 @@ module.exports = (app) => {
         })
     );
 
-    // Passport handling the google code
-    app.get('/auth/google/callback', passport.authenticate('google'));
+    // Passport handling the google code & redirecting after login
+    app.get(
+        '/auth/google/callback',
+        passport.authenticate('google'),
+        (req, res) => {
+            res.redirect('/surveys');
+        }
+    );
 
     app.get('/api/logout', (req, res) => {
         req.logout(); // logout is attached to the req by passport
-        res.send(req.user);
+        res.redirect('/');
     });
 
     app.get('/api/current-user', (req, res) => {
