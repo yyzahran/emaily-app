@@ -13,9 +13,9 @@ class Mailer extends helper.Mail {
         this.recipients = this.formatAddresses(recipients);
 
         this.addContent(this.body); // Provided by the parent class
-
         // Click tracking in the email
         this.addClickTracking();
+        this.addRecipients();
     }
 
     formatAddresses(recipients) {
@@ -30,7 +30,6 @@ class Mailer extends helper.Mail {
 
         trackingSettings.setClickTracking(clickTracking);
         this.addTrackingSettings(trackingSettings);
-        this.addRecipients();
     }
 
     addRecipients() {
@@ -42,20 +41,18 @@ class Mailer extends helper.Mail {
     }
 
     async send() {
-        try {
-            const request = this.sgApi.emptyRequest({
-                method: 'POST',
-                path: '/v3/mail/send',
-                body: this.toJSON(),
-            });
+        const request = this.sgApi.emptyRequest({
+            method: 'POST',
+            path: '/v3/mail/send',
+            body: this.toJSON(),
+        });
 
+        try {
             const response = await this.sgApi.API(request);
             return response;
         } catch (error) {
-            console.error(
-                'Error occurred while sending email:',
-                console.log(error.response.body.message)
-            );
+            console.error('Error occurred while sending email:', error);
+            throw error;
         }
     }
 }
