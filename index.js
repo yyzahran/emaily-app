@@ -4,7 +4,9 @@ const cookieSession = require('cookie-session');
 const passport = require('passport');
 const bodyParser = require('body-parser');
 const { mongoURI, cookieKey } = require('./config/keys');
+/** MongoDB models */
 require('./models/User');
+require('./models/Survey');
 require('./services/passport');
 
 // Connecting to mongoDB
@@ -29,6 +31,7 @@ app.use(passport.session());
 // The above two can be subbed by the following line:
 require('./routes/authRoutes')(app);
 require('./routes/billingRoutes')(app);
+require('./routes/surveyRoutes')(app);
 if (process.env.NODE_ENV === 'production') {
     // Express will serve up production assets like main.js  or main.css
     app.use(express.static('client/build'));

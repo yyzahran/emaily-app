@@ -6,6 +6,8 @@ import { createStore, applyMiddleware } from 'redux';
 import reducers from './reducers';
 import 'materialize-css/dist/css/materialize.min.css';
 import { thunk } from 'redux-thunk';
+import axios from 'axios';
+window.axios = axios;
 
 const el = document.getElementById('root');
 const root = createRoot(el);
