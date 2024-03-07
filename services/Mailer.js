@@ -1,59 +1,35 @@
-const sendgrid = require('sendgrid');
-const helper = sendgrid.mail;
+const mailgun = require('mailgun-js');
 const keys = require('../config/keys');
 
-class Mailer extends helper.Mail {
+class Mailer {
     constructor({ subject, recipients }, content) {
-        super();
-
-        this.sgApi = sendgrid(keys.sendGridKey);
-        this.from_email = new helper.Email('youssef.zahran@resolver.com');
-        this.subject = subject;
-        this.body = new helper.Content('text/html', content);
-        this.recipients = this.formatAddresses(recipients);
-
-        this.addContent(this.body); // Provided by the parent class
-        // Click tracking in the email
-        this.addClickTracking();
-        this.addRecipients();
+        this.mailgun = mailgun({
+            apiKey: keys.mailgunKey,
+            domain: keys.mailgunDomain,
+        });
+        this.data = {
+            from: 'your_mailgun_email@gmail.com',
+            to: this.formatAddresses(recipients),
+            subject: subject,
+            html: content,
+            'o:tracking-clicks': true,
+        };
     }
 
     formatAddresses(recipients) {
-        return recipients.map(({ email }) => {
-            return new helper.Email(email);
-        });
-    }
-
-    addClickTracking() {
-        const trackingSettings = new helper.TrackingSettings();
-        const clickTracking = new helper.ClickTracking(true, true);
-
-        trackingSettings.setClickTracking(clickTracking);
-        this.addTrackingSettings(trackingSettings);
-    }
-
-    addRecipients() {
-        const personalize = new helper.Personalization();
-        this.recipients.forEach((r) => {
-            personalize.addTo(r);
-        });
-        this.addPersonalization(personalize);
+        return recipients.map(({ email }) => email).join(',');
     }
 
     async send() {
-        const request = this.sgApi.emptyRequest({
-            method: 'POST',
-            path: '/v3/mail/send',
-            body: this.toJSON(),
+        return new Promise((resolve, reject) => {
+            this.mailgun.messages().send(this.data, (error, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(body);
+                }
+            });
         });
-
-        try {
-            const response = await this.sgApi.API(request);
-            return response;
-        } catch (error) {
-            console.error('Error occurred while sending email:', error);
-            throw error;
-        }
     }
 }
 
