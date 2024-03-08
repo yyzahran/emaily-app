@@ -2,11 +2,10 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Landing from './Landing';
 import Header from './Header';
+import Dashboard from './Dashboard';
 import { useDispatch } from 'react-redux';
 import * as actions from '../actions';
-
-const Dashboard = () => <h2>Dashboard</h2>;
-const SurveyNew = () => <h2>SurveyNew</h2>;
+import SurveyNew from './SurveyNew';
 
 const App = () => {
     const dispatch = useDispatch();

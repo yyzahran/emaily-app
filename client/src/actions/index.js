@@ -12,3 +12,9 @@ export const handleToken = (token) => async (dispatch) => {
     // Reusing the same action
     dispatch({ type: FETCH_USER, payload: resp.data });
 };
+
+export const submitSurvey = (values, navigate) => async (dispatch) => {
+    const resp = await axios.post('/api/surveys', values);
+    navigate('/surveys');
+    dispatch({ type: FETCH_USER, payload: resp.data });
+};
