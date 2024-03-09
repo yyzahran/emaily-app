@@ -1,13 +1,24 @@
 const requireCredits = require('../middleware/requireCredits');
+const { Path } = require('path-parser');
+const { URL } = require('url');
 const requireLogin = require('../middleware/requireLogin');
 const mongoose = require('mongoose');
 const Mailer = require('../services/Mailer');
 const surveyTemplate = require('../services/emailTemplates/surveyTemplate');
+const _ = require('lodash');
 
 const Survey = mongoose.model('surveys'); // Fetching the 'surveys' model
 
 module.exports = (app) => {
-    app.get('/api/surveys/thanks', (req, res) => {
+    app.get('/api/surveys', requireLogin, async (req, res) => {
+        const surveys = await Survey.find({ _user: req.user.id }).select({
+            recipients: false,
+        });
+
+        res.send(surveys);
+    });
+
+    app.get('/api/surveys/:surveyId/:choice', (req, res) => {
         res.send('Thanks for voting!');
     });
 
